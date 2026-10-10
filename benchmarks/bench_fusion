@@ -1,0 +1,33 @@
+import time
+import numpy as np
+from src.ir import Node, Graph
+from src.passes import apply_operator_fusion
+from src.runtime import execute_graph
+
+def run_benchmark():
+    size = 10_000_000
+    x_val = np.random.randn(size)
+    c_val = np.random.randn(size)
+    
+    x = Node('x', 'Variable')
+    c = Node('c', 'Constant', attrs={'value': c_val})
+    add = Node('add', 'Add', inputs=[x, c])
+    relu = Node('relu', 'Relu', inputs=[add])
+    
+    graph = Graph(outputs=[relu])
+    opt_graph = apply_operator_fusion(graph)
+    
+    feed = {'x': x_val}
+    
+    # Warmup
+    execute_graph(opt_graph, feed)
+    
+    start = time.time()
+    for _ in range(100):
+        execute_graph(opt_graph, feed)
+    duration = time.time() - start
+    
+    print(f"Benchmark completed. 100 iterations of vector size {size}: {duration:.4f} seconds.")
+
+if __name__ == '__main__':
+    run_benchmark()
