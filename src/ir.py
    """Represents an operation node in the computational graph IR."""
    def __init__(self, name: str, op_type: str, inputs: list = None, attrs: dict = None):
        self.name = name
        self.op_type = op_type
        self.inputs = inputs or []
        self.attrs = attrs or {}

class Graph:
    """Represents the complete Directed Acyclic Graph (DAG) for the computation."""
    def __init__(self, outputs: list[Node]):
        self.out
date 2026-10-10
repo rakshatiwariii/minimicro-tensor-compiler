@@ -1,0 +1,12 @@
+class Node:
+    """Represents an operation node in the computational graph IR."""
+    def __init__(self, name: str, op_type: str, inputs: list = None, attrs: dict = None):
+        self.name = name
+        self.op_type = op_type
+        self.inputs = inputs or []
+        self.attrs = attrs or {}
+
+class Graph:
+    """Represents the complete Directed Acyclic Graph (DAG) for the computation."""
+    def __init__(self, outputs: list[Node]):
+        self.outputs = outputs
